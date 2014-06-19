@@ -22,7 +22,7 @@ namespace Escaltethreshold
         static void Main(string[] args)
         {
 
-            DateTime dt = DateTime.Now.Date;
+            DateTime dt = DateTime.Now;
 
             Trace.WriteLine("Application started -->" + dt + "", "Threshold Mail Listener");
             
@@ -34,7 +34,7 @@ namespace Escaltethreshold
             Trace.WriteLine("Starting threshold Model -->."+ dt +"", "TML");
             p.ThresholdListener();
 
-
+            
         }
 
         #region Main threshold Listener
@@ -136,7 +136,7 @@ namespace Escaltethreshold
                     Console.WriteLine(ex.Message + "\nThere Item  is not a Mail Item", "Outlook Reader");
                     isMailItem = false;
                 }
-
+             
 
                 if (isMailItem)
                 {

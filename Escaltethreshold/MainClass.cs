@@ -250,11 +250,12 @@ namespace Escaltethreshold
 
 
         #region insert update delete class
+
         public int insupddelClass(string osql)
         {
             try
             {
-                var xconn = ConfigurationSettings.AppSettings["conOracle"];
+                var xconn = Properties.Settings.Default.ConnectionString;    //ConfigurationSettings.AppSettings["conOracle"];
                 OracleConnection conn = new OracleConnection(com.IBL.Utility.Devsecurity.StringDecrypt(xconn));
 
                 string isql = osql;
@@ -275,6 +276,7 @@ namespace Escaltethreshold
             {
                 //string elog = Convert.ToString(ex);
                 //this.writelog(elog);
+                Trace.WriteLine("Error Message",ex.ToString());
                 return 0;
 
             }
@@ -304,10 +306,9 @@ namespace Escaltethreshold
         //    //  Outlook.ApplicationClass outLookApp = new Outlook.ApplicationClass();
 
         //    // Ring up the new message event.
-        //    outlookApp.NewMail += new Outlook.ApplicationEvents_11_NewMailEventHandler(outLookApp_NewMailEx);                                      //ApplicationEvents_11_NewMailEventHandler(outLookApp_NewMailEx);
+        //    outlookApp.NewMail += new Outlook.ApplicationEvents_11_NewMailEventHandler(outLookApp_NewMailEx);           //ApplicationEvents_11_NewMailEventHandler(outLookApp_NewMailEx);
         //    Console.WriteLine("Please wait for new messages...");
         //    Console.ReadLine();
-
 
 
         //}
