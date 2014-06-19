@@ -22,8 +22,16 @@ namespace Escaltethreshold
         static void Main(string[] args)
         {
 
+            DateTime dt = DateTime.Now.Date;
+
+            Trace.WriteLine("Application started -->" + dt + "", "Threshold Mail Listener");
+            
             var p = new Program();
+
+            Trace.WriteLine("Checking for Outlook process --> " + dt +".", "TML");
             p.checkoutlook();
+
+            Trace.WriteLine("Starting threshold Model -->."+ dt +"", "TML");
             p.ThresholdListener();
 
 
