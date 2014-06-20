@@ -11,7 +11,7 @@ using System.Globalization;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using System.Runtime.InteropServices;
 using System.Configuration;
-
+using System.Windows.Forms;
 
 namespace Escaltethreshold
 {
@@ -34,7 +34,7 @@ namespace Escaltethreshold
             Trace.WriteLine("Checking for Outlook process --> " + dt +".", "TML");
             p.checkoutlook();
 
-            Trace.WriteLine("Starting threshold Model -->."+ dt +"", "TML");
+            Trace.WriteLine("Starting threshold Model -->"+ dt +"", "TML");
             p.ThresholdListener();
 
             
@@ -235,12 +235,19 @@ namespace Escaltethreshold
             if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable() != true)
             {
 
-                Trace.WriteLine("There is no network Connection ---> Plase Check cable \n", "TML");
+                Trace.WriteLine("There is no network Connection ---> Please Check cable \n", "TML");
+                var result = MessageBox.Show("There is a problem --> No Network Connection", "", 
+                    MessageBoxButtons.OK);
+                if(result == DialogResult.OK)
+                {
+                    return;
+
+                }
                 return;
             }
 
         }
-        #endregion
+        #endregion 
     
     }
 }
