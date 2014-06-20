@@ -28,6 +28,9 @@ namespace Escaltethreshold
             
             var p = new Program();
 
+            Trace.WriteLine("Checking for Network Connection --> " + dt + ".", "TML");
+            p.checknetwork();
+
             Trace.WriteLine("Checking for Outlook process --> " + dt +".", "TML");
             p.checkoutlook();
 
@@ -150,22 +153,32 @@ namespace Escaltethreshold
 
                         subject = item.Subject;
                         body = item.Body;
+                        
 
                         if (subject.Contains("THRESHOLD") || body.Contains("Threshold") || body.Contains("Threshold Reporting - Nigeria"))
                         {
 
                             creationdate = (item.SentOn);
                             subject = subject.Replace('\'', '\"').ToUpper();
+                 //           recepients = item.Recipients;
 
+
+                            Outlook.Recipients recips = item.Recipients;
+                            foreach (Outlook.Recipient recip in recips)
+                            {
+                                Outlook.PropertyAccessor pa = recip.PropertyAccessor;
+
+                                recepients = (recip.Name);
+                            }
                             //Create Appointments
 
                             int X = m.createAppointment(subject, body, creationdate);
 
 
                             //insert into oracle database
-                            string isql = "INSERT INTO THRESHOLD_TASK (TASK_SUBJECT ,TASK_START_DATE,TASK_STATUS,TASK_END_DATE,LAST_UPDATE_DATE ," +
-                        "CREATION_DATE ,AST_UPDATE_BY, TASK_PRIORITY) Values ('" + subject + "', '" + creationdate + "', 'In Progress',  '" + (creationdate.AddHours(2)) + "'," +
-                            " '" + CurrTime + "','" + CurrTime + "','TML', High' )";
+                            string isql = "INSERT INTO c##isng.THRESHOLD_TASK (TASK_SUBJECT ,TASK_START_DATE,TASK_STATUS,TASK_END_DATE,LAST_UPDATE_DATE ," +
+                        "CREATION_DATE ,AST_UPDATE_BY, TASK_PRIORITY,TASK_ASSIGN1) Values ('" + subject + "', '" + creationdate + "', 'In Progress',  '" + (creationdate.AddHours(2)) + "'," +
+                            " '" + CurrTime + "','" + CurrTime + "','TML', 'High' , '" + recepients + "')";
 
                             int ires = m.insupddelClass(isql);
 
@@ -216,6 +229,18 @@ namespace Escaltethreshold
         }
         #endregion
 
+        #region checking Network Connection
+        public void checknetwork()
+        {
+            if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable() != true)
+            {
 
+                Trace.WriteLine("There is no network Connection ---> Plase Check cable \n", "TML");
+                return;
+            }
+
+        }
+        #endregion
+    
     }
 }

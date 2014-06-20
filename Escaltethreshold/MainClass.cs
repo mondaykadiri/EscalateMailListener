@@ -168,7 +168,7 @@ namespace Escaltethreshold
 				oAppointment.End = xsentdate.AddHours(3); // End date 
 				oAppointment.ReminderSet = true; // Set the reminder
 				oAppointment.ReminderMinutesBeforeStart = 15; // reminder time
-				oAppointment.Importance = Outlook.OlImportance.olImportanceHigh; // appointment importance
+			oAppointment.Importance = Outlook.OlImportance.olImportanceHigh; // appointment importance
 				oAppointment.BusyStatus = Outlook.OlBusyStatus.olBusy;
 				oAppointment.Save();
 
@@ -250,13 +250,12 @@ namespace Escaltethreshold
 
 
         #region insert update delete class
-
         public int insupddelClass(string osql)
         {
             try
             {
                 var xconn = Properties.Settings.Default.ConnectionString;    //ConfigurationSettings.AppSettings["conOracle"];
-                OracleConnection conn = new OracleConnection(com.IBL.Utility.Devsecurity.StringDecrypt(xconn));
+                OracleConnection conn = new OracleConnection((xconn));
 
                 string isql = osql;
 
@@ -264,6 +263,7 @@ namespace Escaltethreshold
                 conn.Open();
                 cmd.CommandType = CommandType.Text;
                 cmd.ExecuteNonQuery();
+                Trace.WriteLine("Information Saved in Database \n");
                 return 1;
 
 
@@ -276,7 +276,7 @@ namespace Escaltethreshold
             {
                 //string elog = Convert.ToString(ex);
                 //this.writelog(elog);
-                Trace.WriteLine("Error Message",ex.ToString());
+                Trace.WriteLine("Error Message",ex.ToString()+"\n");
                 return 0;
 
             }
