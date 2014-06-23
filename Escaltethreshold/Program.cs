@@ -12,6 +12,8 @@ using Outlook = Microsoft.Office.Interop.Outlook;
 using System.Runtime.InteropServices;
 using System.Configuration;
 using System.Windows.Forms;
+using Office = Microsoft.Office.Core;
+
 
 namespace Escaltethreshold
 {
@@ -25,19 +27,19 @@ namespace Escaltethreshold
             DateTime dt = DateTime.Now;
 
             Trace.WriteLine("Application started -->" + dt + "", "Threshold Mail Listener");
-            
+
             var p = new Program();
 
             Trace.WriteLine("Checking for Network Connection --> " + dt + ".", "TML");
             p.checknetwork();
 
-            Trace.WriteLine("Checking for Outlook process --> " + dt +".", "TML");
+            Trace.WriteLine("Checking for Outlook process --> " + dt + ".", "TML");
             p.checkoutlook();
-
-            Trace.WriteLine("Starting threshold Model -->"+ dt +"", "TML");
+         
+            Trace.WriteLine("Starting threshold Model -->" + dt + "", "TML");
             p.ThresholdListener();
 
-            
+
         }
 
         #region Main threshold Listener
@@ -60,16 +62,10 @@ namespace Escaltethreshold
 
 
             //Write into system Event logs
-            String sSource = "Threshold Mail Listerner";
-            String sLog = "Application";
-            String sEvent = "TML Logs -->";
+            //String sSource = "Threshold Mail Listerner";
+            //String sLog = "Application";
+            //String sEvent = "TML Logs -->";
 
-            //if (!EventLog.SourceExists(sSource))
-            //    EventLog.CreateEventSource(sSource, sLog);
-
-
-
-            //EventLog.WriteEntry(sSource, sEvent);
 
             if (Process.GetProcessesByName("OUTLOOK").Count() <= 0)
             {
@@ -79,7 +75,7 @@ namespace Escaltethreshold
                 {
 
                     Microsoft.Office.Interop.Outlook.Application myApp = new Microsoft.Office.Interop.Outlook.Application();
-                   
+
 
                 }
                 catch (Exception ex)
@@ -112,11 +108,15 @@ namespace Escaltethreshold
             mapiNameSpace = myapp.GetNamespace("MAPI");
 
             //selecting Inbox folder
-
             myInbox = mapiNameSpace.GetDefaultFolder(Microsoft.Office.Interop.Outlook.OlDefaultFolders.olFolderInbox);
             mapiNameSpace.SendAndReceive(false); //performs SendRecieve Operation without showing ProgrssDialog
 
-            if (myInbox.Items.Count > 0) //if checking mailcount greater than 0
+           Outlook.Items items = myInbox.Items;
+           //items.ItemAdd += new Outlook.ItemsEvents_ItemAddEventHandler(this.items_ItemAdd);
+
+
+
+           if (myInbox.Items.Count > 0)//(xitem is Outlook.MailItem)//(myInbox.Items.Count > 0) //if checking mailcount greater than 0
             {
                 string subject = string.Empty;
                 string attachments = string.Empty;
@@ -139,12 +139,11 @@ namespace Escaltethreshold
                     Console.WriteLine(ex.Message + "\nThere Item  is not a Mail Item", "Outlook Reader");
                     isMailItem = false;
                 }
-             
+
 
                 if (isMailItem)
                 {
-
-
+                  
                     for (int i = 1; i <= myInbox.Items.Count; i++)
                     {
 
@@ -153,14 +152,14 @@ namespace Escaltethreshold
 
                         subject = item.Subject;
                         body = item.Body;
-                        
 
+                       
                         if (subject.Contains("THRESHOLD") || body.Contains("Threshold") || body.Contains("Threshold Reporting - Nigeria"))
                         {
 
                             creationdate = (item.SentOn);
                             subject = subject.Replace('\'', '\"').ToUpper();
-                 //           recepients = item.Recipients;
+                            // recepients = item.Recipients;
 
 
                             Outlook.Recipients recips = item.Recipients;
@@ -170,16 +169,27 @@ namespace Escaltethreshold
 
                                 recepients = (recip.Name);
                             }
+                            
                             //Create Appointments
-
                             int X = m.createAppointment(subject, body, creationdate);
 
 
-                            //insert into oracle database
+                            var result = MessageBox.Show(" Hello " + recepients + " \n New Appointment/Calendar with Subject " + subject + "", "",
+                   MessageBoxButtons.OK);
+                            if (result == DialogResult.OK)
+                            {
+                                return;
+
+                            }
+
+
+                           //generating the sql query
                             string isql = "INSERT INTO c##isng.THRESHOLD_TASK (TASK_SUBJECT ,TASK_START_DATE,TASK_STATUS,TASK_END_DATE,LAST_UPDATE_DATE ," +
                         "CREATION_DATE ,AST_UPDATE_BY, TASK_PRIORITY,TASK_ASSIGN1) Values ('" + subject + "', '" + creationdate + "', 'In Progress',  '" + (creationdate.AddHours(2)) + "'," +
                             " '" + CurrTime + "','" + CurrTime + "','TML', 'High' , '" + recepients + "')";
-
+ 
+                            
+                            //insert into oracle database
                             int ires = m.insupddelClass(isql);
 
 
@@ -236,9 +246,9 @@ namespace Escaltethreshold
             {
 
                 Trace.WriteLine("There is no network Connection ---> Please Check cable \n", "TML");
-                var result = MessageBox.Show("There is a problem --> No Network Connection", "", 
+                var result = MessageBox.Show("There is a problem --> No Network Connection", "",
                     MessageBoxButtons.OK);
-                if(result == DialogResult.OK)
+                if (result == DialogResult.OK)
                 {
                     return;
 
@@ -247,7 +257,19 @@ namespace Escaltethreshold
             }
 
         }
-        #endregion 
-    
+        #endregion
+
+        #region checking New Email
+        //public void ThisListener_Startup(object sender, System.EventArgs e)
+        //{
+        //    Microsoft.Office.Interop.Outlook.Application myapp = null;
+        //    Microsoft.Office.Interop.Outlook.MAPIFolder myInbox = null;
+        //    Outlook.Application Application = null;
+
+
+        //    Outlook.MAPIFolder inbox = Application.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderInbox);
+        //    inbox.Items.ItemAdd += new Outlook.ItemsEvents_ItemAddEventHandler(this.ThresholdListener);
+        //}
+        #endregion
     }
 }

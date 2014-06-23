@@ -99,22 +99,22 @@ namespace Escaltethreshold
         //    task.send();
         //}
 
-        //private void CreateToDoItemExample()
-        //{
-        //    // Date operations
-        //    DateTime today = DateTime.Parse("10:00 AM");
-        //    TimeSpan duration = TimeSpan.FromDays(1);
-        //    DateTime tomorrow = today.Add(duration);
-        //    Outlook.MailItem mail = Application.Session.
-        //        GetDefaultFolder(
-        //        Outlook.OlDefaultFolders.olFolderInbox).Items.Find(
-        //        "[MessageClass]='IPM.Note'") as Outlook.MailItem;
-        //    mail.MarkAsTask(Outlook.OlMarkInterval.olMarkTomorrow);
-        //    mail.TaskStartDate = today;
-        //    mail.ReminderSet = true;
-        //    mail.ReminderTime = tomorrow;
-        //    mail.Save();
-        //}
+         //private void createtodoitemexample()
+         //{
+         //    // date operations
+         //    datetime today = datetime.parse("10:00 am");
+         //    timespan duration = timespan.fromdays(1);
+         //    datetime tomorrow = today.add(duration);
+         //    outlook.mailitem mail = application.session.
+         //        getdefaultfolder(
+         //        outlook.oldefaultfolders.olfolderinbox).items.find(
+         //        "[messageclass]='ipm.note'") as outlook.mailitem;
+         //    mail.markastask(outlook.olmarkinterval.olmarktomorrow);
+         //    mail.taskstartdate = today;
+         //    mail.reminderset = true;
+         //    mail.remindertime = tomorrow;
+         //    mail.save();
+         //}
 
 
         //private void AddAppointment()
@@ -306,7 +306,7 @@ namespace Escaltethreshold
         //    //  Outlook.ApplicationClass outLookApp = new Outlook.ApplicationClass();
 
         //    // Ring up the new message event.
-        //    outlookApp.NewMail += new Outlook.ApplicationEvents_11_NewMailEventHandler(outLookApp_NewMailEx);           //ApplicationEvents_11_NewMailEventHandler(outLookApp_NewMailEx);
+        //    outlookApp.NewMail += ApplicationEvents_11_NewMailEventHandler(outLookApp_NewMailEx);
         //    Console.WriteLine("Please wait for new messages...");
         //    Console.ReadLine();
 
@@ -320,6 +320,10 @@ namespace Escaltethreshold
                     "NOTE", MessageBoxButtons.OK);
         }
         #endregion
+
+
+
+
 
     }
 }
