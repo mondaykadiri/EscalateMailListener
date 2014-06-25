@@ -16,6 +16,8 @@ using Oracle.DataAccess.Client;
 using System.Data;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Configuration;
+using Twilio;
 
 
 
@@ -24,6 +26,7 @@ namespace Escaltethreshold
     class MainClass
     {
         ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2007_SP1);
+        
 
         #region find outlook items
         public void FindItems()
@@ -66,7 +69,7 @@ namespace Escaltethreshold
         }
          #endregion 
 
-         #region Email forwarder.
+         #region Email forwarder
          public void ForwardMessage(EmailMessage messageToForward, string forward, string ccrec)
         {
             messageToForward.Forward(forward);
@@ -78,7 +81,49 @@ namespace Escaltethreshold
         }
         #endregion
 
-        //private void assigntaskexample(string xsubject)
+         #region Email forwarder
+         public void sendtextmessage(string xTo, string xmsg)
+         {
+             if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable() == true)
+             {
+                 // Find your Account Sid and Auth Token at twilio.com/user/account 
+                 //string AccountSid = "AC45b00a5504e242b8a486ebf4cad405c9";
+                 //string AuthToken = "605ec28a7d811660710961fdc3a9f594";
+                 //var twilio = new TwilioRestClient(AccountSid, AuthToken);
+
+                 //var message = twilio.SendMessage("[From]", "[To]", null, null, null);
+                 //Console.WriteLine(message.Sid); 
+
+                 string AccountSid = "AC45b00a5504e242b8a486ebf4cad405c9";
+                 string AuthToken = "605ec28a7d811660710961fdc3a9f594";
+
+                 var twilio = new TwilioRestClient(AccountSid, AuthToken);
+                // var message = twilio.SendMessage("+17314724935", xTo, xmsg);
+                 var message = twilio.SendMessage("+17314724935", xTo, xmsg);                //("+17314724935", xTo, xmsg,null ,"", AccountSid); 
+                 
+
+                 //if (message.Sid != null)
+                 //{
+                   
+                 //    Trace.WriteLine("The Messsage ID is "+ message.Sid+"");
+                 //}
+                 //else
+                 //{
+                 //    Trace.WriteLine( "Message Not Sent");
+
+                 //}
+             }
+             else
+             {
+                 MessageBox.Show("There is a Network Issue", "", MessageBoxButtons.OK);
+
+             }
+
+         }
+          #endregion
+
+
+         //private void assigntaskexample(string xsubject)
         //{
         //    outlook.application application = globals.thisaddin.application;
         //    outlook.taskitem task = application.createitem(
@@ -155,9 +200,12 @@ namespace Escaltethreshold
         #region creating Appointment.
         public int createAppointment(string xsubject, string xbody, DateTime xsentdate)
 		{
+           
 
 			try
 			{
+                
+               
 				Outlook.Application outlookApp = new Outlook.Application(); // creates new outlook app
 				Outlook.AppointmentItem oAppointment = (Outlook.AppointmentItem)outlookApp.CreateItem(Outlook.OlItemType.olAppointmentItem); // creates a new appointment
 
@@ -168,15 +216,17 @@ namespace Escaltethreshold
 				oAppointment.End = xsentdate.AddHours(3); // End date 
 				oAppointment.ReminderSet = true; // Set the reminder
 				oAppointment.ReminderMinutesBeforeStart = 15; // reminder time
-			oAppointment.Importance = Outlook.OlImportance.olImportanceHigh; // appointment importance
+			    oAppointment.Importance = Outlook.OlImportance.olImportanceHigh; // appointment importance
 				oAppointment.BusyStatus = Outlook.OlBusyStatus.olBusy;
 				oAppointment.Save();
 
 				Outlook.MailItem mailItem = oAppointment.ForwardAsVcal(); 
+
                 // email address to send to 
                 mailItem.To = "mondaykadiri@gmail.com"; 
-                    // send 
-                    mailItem.Send();
+             
+                mailItem.Send();
+
 				//service.AutodiscoverUrl("monday.kadiri@ng.is.co.za");
 				//Appointment appointment = new Appointment(service);
 				//appointment.Subject = xsubject;     // "Meditation";
@@ -186,11 +236,13 @@ namespace Escaltethreshold
 				//// Occurs every weeks on Tuesday and Thursday
 				////appointment.Recurrence = new Recurrence.WeeklyPattern( new DateTime(2008, 1, 1),2, DayOfWeek.Tuesday,DayOfWeek.Thursday);
 				//appointment.Save();
+
 				return 1;
 
 			}
 			catch (Exception e)
 			{
+                Trace.WriteLine(e.ToString());
 				return 0;
 
 			}

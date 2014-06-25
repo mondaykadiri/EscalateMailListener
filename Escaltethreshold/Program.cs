@@ -13,6 +13,7 @@ using System.Runtime.InteropServices;
 using System.Configuration;
 using System.Windows.Forms;
 using Office = Microsoft.Office.Core;
+using System.Configuration;
 
 
 namespace Escaltethreshold
@@ -38,7 +39,7 @@ namespace Escaltethreshold
          
             Trace.WriteLine("Starting threshold Model -->" + dt + "", "TML");
             p.ThresholdListener();
-
+            Trace.WriteLine("Endiing threshold Model -->" + dt + " \n", "TML");
 
         }
 
@@ -66,7 +67,7 @@ namespace Escaltethreshold
             //String sLog = "Application";
             //String sEvent = "TML Logs -->";
 
-
+            //Check if Outlook process is running
             if (Process.GetProcessesByName("OUTLOOK").Count() <= 0)
             {
 
@@ -112,7 +113,7 @@ namespace Escaltethreshold
             mapiNameSpace.SendAndReceive(false); //performs SendRecieve Operation without showing ProgrssDialog
 
            Outlook.Items items = myInbox.Items;
-           //items.ItemAdd += new Outlook.ItemsEvents_ItemAddEventHandler(this.items_ItemAdd);
+        // items.ItemAdd += new Outlook.ItemsEvents_ItemAddEventHandler();
 
 
 
@@ -176,11 +177,13 @@ namespace Escaltethreshold
 
                             var result = MessageBox.Show(" Hello " + recepients + " \n New Appointment/Calendar with Subject " + subject + "", "",
                    MessageBoxButtons.OK);
-                            if (result == DialogResult.OK)
-                            {
-                                return;
+                            //if (result == DialogResult.OK)
+                            //{
+                            //    return;
 
-                            }
+                            //}
+
+
 
 
                            //generating the sql query
@@ -193,7 +196,12 @@ namespace Escaltethreshold
                             int ires = m.insupddelClass(isql);
 
 
+                            //send Text Messages
+                            string xphone = "+2348029998152";//ConfigurationManager.AppSettings["phonenumber"];
+                            string msg = " Hello you have an appointment with subject " + subject + " Please check your calendar";
+                            m.sendtextmessage(xphone, msg);
 
+                      
 
 
                         }

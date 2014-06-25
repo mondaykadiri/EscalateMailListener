@@ -25,7 +25,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationRevision>1</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -119,6 +119,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Twilio.Api">
+      <HintPath>..\..\..\..\App Development\Projects\test\test\bin\Debug\Twilio.Api.dll</HintPath>
+    </Reference>
     <Reference Include="VbNetJutility">
       <HintPath>..\..\ISNG\ISNG\bin\VbNetJutility.dll</HintPath>
     </Reference>
