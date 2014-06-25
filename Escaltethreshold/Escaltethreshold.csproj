@@ -122,6 +122,9 @@
     <Reference Include="Twilio.Api">
       <HintPath>..\..\..\..\App Development\Projects\test\test\bin\Debug\Twilio.Api.dll</HintPath>
     </Reference>
+    <Reference Include="Twilio.Twiml">
+      <HintPath>..\packages\Twilio.TwiML.3.3.3\lib\3.5\Twilio.Twiml.dll</HintPath>
+    </Reference>
     <Reference Include="VbNetJutility">
       <HintPath>..\..\ISNG\ISNG\bin\VbNetJutility.dll</HintPath>
     </Reference>
@@ -144,6 +147,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Escaltethreshold_TemporaryKey.pfx" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -175,7 +179,7 @@
     <COMReference Include="Microsoft.Office.Core">
       <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
       <VersionMajor>2</VersionMajor>
-      <VersionMinor>7</VersionMinor>
+      <VersionMinor>4</VersionMinor>
       <Lcid>0</Lcid>
       <WrapperTool>primary</WrapperTool>
       <Isolated>False</Isolated>

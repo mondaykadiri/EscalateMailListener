@@ -86,32 +86,14 @@ namespace Escaltethreshold
          {
              if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable() == true)
              {
-                 // Find your Account Sid and Auth Token at twilio.com/user/account 
-                 //string AccountSid = "AC45b00a5504e242b8a486ebf4cad405c9";
-                 //string AuthToken = "605ec28a7d811660710961fdc3a9f594";
-                 //var twilio = new TwilioRestClient(AccountSid, AuthToken);
-
-                 //var message = twilio.SendMessage("[From]", "[To]", null, null, null);
-                 //Console.WriteLine(message.Sid); 
 
                  string AccountSid = "AC45b00a5504e242b8a486ebf4cad405c9";
                  string AuthToken = "605ec28a7d811660710961fdc3a9f594";
 
                  var twilio = new TwilioRestClient(AccountSid, AuthToken);
-                // var message = twilio.SendMessage("+17314724935", xTo, xmsg);
-                 var message = twilio.SendMessage("+17314724935", xTo, xmsg);                //("+17314724935", xTo, xmsg,null ,"", AccountSid); 
-                 
-
-                 //if (message.Sid != null)
-                 //{
-                   
-                 //    Trace.WriteLine("The Messsage ID is "+ message.Sid+"");
-                 //}
-                 //else
-                 //{
-                 //    Trace.WriteLine( "Message Not Sent");
-
-                 //}
+             
+                 var message =  twilio.SendMessage("+17314724935", xTo, xmsg, "http://localhost:6200");
+              
              }
              else
              {
@@ -315,7 +297,7 @@ namespace Escaltethreshold
                 conn.Open();
                 cmd.CommandType = CommandType.Text;
                 cmd.ExecuteNonQuery();
-                Trace.WriteLine("Information Saved in Database \n");
+                Trace.WriteLine("Information Saved in Database >>>>>>");
                 return 1;
 
 

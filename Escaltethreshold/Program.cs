@@ -12,8 +12,10 @@ using Outlook = Microsoft.Office.Interop.Outlook;
 using System.Runtime.InteropServices;
 using System.Configuration;
 using System.Windows.Forms;
+using System.Net;
 using Office = Microsoft.Office.Core;
-using System.Configuration;
+
+
 
 
 namespace Escaltethreshold
@@ -27,19 +29,29 @@ namespace Escaltethreshold
 
             DateTime dt = DateTime.Now;
 
-            Trace.WriteLine("Application started -->" + dt + "", "Threshold Mail Listener");
+            Trace.WriteLine("<<<<<<<<<<<<<Application Started>>>>>>>>>>>>>>>>>>>" + dt + "", "TML");
 
             var p = new Program();
+
+            string ipadr = p.GetIP();
+            string strttime = dt.ToString();
 
             Trace.WriteLine("Checking for Network Connection --> " + dt + ".", "TML");
             p.checknetwork();
 
             Trace.WriteLine("Checking for Outlook process --> " + dt + ".", "TML");
             p.checkoutlook();
-         
+
             Trace.WriteLine("Starting threshold Model -->" + dt + "", "TML");
             p.ThresholdListener();
-            Trace.WriteLine("Endiing threshold Model -->" + dt + " \n", "TML");
+            Trace.WriteLine("Endiing threshold Model -->" + dt + " ", "TML");
+            Trace.WriteLine("Memory Consumption " + p.processcalc().ToString() + " \n ");
+
+            string xendtime = dt.ToString();
+
+            p.audittrail(ipadr, strttime, xendtime);
+
+            Trace.WriteLine("<<<<<<<<<<<<<Application Ended>>>>>>>>>>>>>>>>>>> " + dt + "\n", "TML");
 
         }
 
@@ -112,12 +124,13 @@ namespace Escaltethreshold
             myInbox = mapiNameSpace.GetDefaultFolder(Microsoft.Office.Interop.Outlook.OlDefaultFolders.olFolderInbox);
             mapiNameSpace.SendAndReceive(false); //performs SendRecieve Operation without showing ProgrssDialog
 
-           Outlook.Items items = myInbox.Items;
-        // items.ItemAdd += new Outlook.ItemsEvents_ItemAddEventHandler();
+            Outlook.Items items = myInbox.Items;
+            //string EID = EmailMessage.
+            //items.ItemAdd += ity.
+            ////items.ItemAdd += Outlook.Items
 
 
-
-           if (myInbox.Items.Count > 0)//(xitem is Outlook.MailItem)//(myInbox.Items.Count > 0) //if checking mailcount greater than 0
+            if (myInbox.Items.Count > 0)//(xitem is Outlook.MailItem)//(myInbox.Items.Count > 0) //if checking mailcount greater than 0
             {
                 string subject = string.Empty;
                 string attachments = string.Empty;
@@ -144,7 +157,7 @@ namespace Escaltethreshold
 
                 if (isMailItem)
                 {
-                  
+
                     for (int i = 1; i <= myInbox.Items.Count; i++)
                     {
 
@@ -154,7 +167,7 @@ namespace Escaltethreshold
                         subject = item.Subject;
                         body = item.Body;
 
-                       
+
                         if (subject.Contains("THRESHOLD") || body.Contains("Threshold") || body.Contains("Threshold Reporting - Nigeria"))
                         {
 
@@ -170,7 +183,7 @@ namespace Escaltethreshold
 
                                 recepients = (recip.Name);
                             }
-                            
+
                             //Create Appointments
                             int X = m.createAppointment(subject, body, creationdate);
 
@@ -186,12 +199,12 @@ namespace Escaltethreshold
 
 
 
-                           //generating the sql query
+                            //generating the sql query
                             string isql = "INSERT INTO c##isng.THRESHOLD_TASK (TASK_SUBJECT ,TASK_START_DATE,TASK_STATUS,TASK_END_DATE,LAST_UPDATE_DATE ," +
                         "CREATION_DATE ,AST_UPDATE_BY, TASK_PRIORITY,TASK_ASSIGN1) Values ('" + subject + "', '" + creationdate + "', 'In Progress',  '" + (creationdate.AddHours(2)) + "'," +
                             " '" + CurrTime + "','" + CurrTime + "','TML', 'High' , '" + recepients + "')";
- 
-                            
+
+
                             //insert into oracle database
                             int ires = m.insupddelClass(isql);
 
@@ -201,7 +214,7 @@ namespace Escaltethreshold
                             string msg = " Hello you have an appointment with subject " + subject + " Please check your calendar";
                             m.sendtextmessage(xphone, msg);
 
-                      
+
 
 
                         }
@@ -278,6 +291,91 @@ namespace Escaltethreshold
         //    Outlook.MAPIFolder inbox = Application.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderInbox);
         //    inbox.Items.ItemAdd += new Outlook.ItemsEvents_ItemAddEventHandler(this.ThresholdListener);
         //}
+
+        #endregion
+
+        #region NewMail event handler.
+        private static void outLookApp_NewMailEx(string EntryIDCollection)
+        {
+            MessageBox.Show("You've got a new mail whose EntryIDCollection is \n" + EntryIDCollection,
+                    "NOTE", MessageBoxButtons.OK);
+        }
+        #endregion
+
+
+        #region NewMail event handler.
+        public object processcalc()
+        {
+            System.Threading.Thread.MemoryBarrier();
+
+            var initialMemory = System.GC.GetTotalMemory(true);
+            // body
+            var somethingThatConsumesMemory = Enumerable.Range(0, 100000)
+                .ToArray();
+            // end
+            System.Threading.Thread.MemoryBarrier();
+            var finalMemory = System.GC.GetTotalMemory(true);
+            var consumption = finalMemory - initialMemory;
+            return consumption;
+        }
+        #endregion
+
+        #region Get Local IPAddress.
+        public string GetIP()
+        {
+            string strHostName = "";
+            strHostName = System.Net.Dns.GetHostName();
+            IPHostEntry ipEntry = System.Net.Dns.GetHostEntry(strHostName);
+            IPAddress[] addr = ipEntry.AddressList;
+            return addr[addr.Length - 2].ToString();
+        }
+        #endregion
+
+        #region Audit Trail.
+        public void audittrail(string hostname, string starttime, string endtime)
+        {
+
+          Guid  g = Guid.NewGuid();
+            string isql = "INSERT " +
+                 "INTO C##ISNG.APPMONITOR" +
+                  "(" +
+                   "HOSTNAME ," +
+                  " CREATED_BY ," +   
+                   " APPENDTIME ," +
+                   "CREATED_ON ," +
+                   "LASTMODIFIED ," +   
+                   " LAST_UPDATED_BY ," +
+                  "  LAST_UPDATED_ON ," +
+                   " APPSTARTTIME ," +
+                       " SESSIONID" +
+                  " )" +
+              " VALUES" +
+                  " (" +
+              " '" + hostname + "'," +
+              " 'TML' ," +
+               " '" + endtime + "'," +
+                " sysdate," +
+               " 'TML'," +
+                " '"+endtime+"'," +
+                    " '" + endtime + "'," +
+           " '" + starttime + "'," +
+            "  '"+ g +"' " +
+                 ")";
+            MainClass m = new MainClass();
+            int y = m.insupddelClass(isql);
+
+            if (y == 1)
+            {
+                Trace.WriteLine("<<<<<<<<Audit Trail Updated>>>>>>>>>>");
+
+            }
+            else
+            {
+
+                Trace.WriteLine("<<<<<<<Audit Trail Not Updated>>>>>>>>");
+            }
+
+        }
         #endregion
     }
 }
