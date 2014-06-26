@@ -26,6 +26,7 @@ namespace Escaltethreshold
         [STAThread]
         static void Main(string[] args)
         {
+            #region Call to main Execution
 
             DateTime dt = DateTime.Now;
 
@@ -44,14 +45,16 @@ namespace Escaltethreshold
 
             Trace.WriteLine("Starting threshold Model -->" + dt + "", "TML");
             p.ThresholdListener();
+
             Trace.WriteLine("Endiing threshold Model -->" + dt + " ", "TML");
             Trace.WriteLine("Memory Consumption " + p.processcalc().ToString() + " \n ");
 
             string xendtime = dt.ToString();
-
             p.audittrail(ipadr, strttime, xendtime);
 
             Trace.WriteLine("<<<<<<<<<<<<<Application Ended>>>>>>>>>>>>>>>>>>> " + dt + "\n", "TML");
+
+            #endregion
 
         }
 
@@ -124,13 +127,13 @@ namespace Escaltethreshold
             myInbox = mapiNameSpace.GetDefaultFolder(Microsoft.Office.Interop.Outlook.OlDefaultFolders.olFolderInbox);
             mapiNameSpace.SendAndReceive(false); //performs SendRecieve Operation without showing ProgrssDialog
 
-            Outlook.Items items = myInbox.Items;
-            //string EID = EmailMessage.
-            //items.ItemAdd += ity.
-            ////items.ItemAdd += Outlook.Items
+            Outlook.Items _items = myInbox.Items;
+            _items.ItemAdd += new Outlook.ItemsEvents_ItemAddEventHandler(Items_ItemAdd);
+
+            Outlook.Items UnReads = myInbox.Items.Restrict("[Unread]=true");
 
 
-            if (myInbox.Items.Count > 0)//(xitem is Outlook.MailItem)//(myInbox.Items.Count > 0) //if checking mailcount greater than 0
+            if (UnReads.Count > 0) //(myInbox.Items.Count > 0)//(xitem is Outlook.MailItem)//(myInbox.Items.Count > 0) //if checking mailcount greater than 0
             {
                 string subject = string.Empty;
                 string attachments = string.Empty;
@@ -158,15 +161,14 @@ namespace Escaltethreshold
                 if (isMailItem)
                 {
 
-                    for (int i = 1; i <= myInbox.Items.Count; i++)
+                    for (int i = 1; i <= UnReads.Count; i++)    //(int i = 1; i <= myInbox.Items.Count; i++)
                     {
-
-
-                        var item = myInbox.Items[i];
-
+                        // var item = myInbox.Items[i];
+                        var item = UnReads[i];
                         subject = item.Subject;
                         body = item.Body;
 
+                        //Microsoft.Office.Interop.Outlook.MailItem oMsg = ( Microsoft.Office.Interop.Outlook.MailItem)oItems[i];
 
                         if (subject.Contains("THRESHOLD") || body.Contains("Threshold") || body.Contains("Threshold Reporting - Nigeria"))
                         {
@@ -189,7 +191,7 @@ namespace Escaltethreshold
 
 
                             var result = MessageBox.Show(" Hello " + recepients + " \n New Appointment/Calendar with Subject " + subject + "", "",
-                   MessageBoxButtons.OK);
+                                             MessageBoxButtons.OK);
                             //if (result == DialogResult.OK)
                             //{
                             //    return;
@@ -230,6 +232,13 @@ namespace Escaltethreshold
         }
         #endregion
 
+        #region garbage collection
+        private void Items_ItemAdd(object Item)
+        {
+            MessageBox.Show("New Mail");
+            throw new NotImplementedException();
+        }
+        #endregion
 
         #region starting Outlook
         public void startsoutlook()
@@ -281,27 +290,37 @@ namespace Escaltethreshold
         #endregion
 
         #region checking New Email
-        //public void ThisListener_Startup(object sender, System.EventArgs e)
-        //{
-        //    Microsoft.Office.Interop.Outlook.Application myapp = null;
-        //    Microsoft.Office.Interop.Outlook.MAPIFolder myInbox = null;
-        //    Outlook.Application Application = null;
+        public void ThisListener_Startup(object sender, EventArgs e)
+        {
+            Microsoft.Office.Interop.Outlook.Application myapp = null;
+            Microsoft.Office.Interop.Outlook.MAPIFolder myInbox = null;
+            Outlook.Application Application = null;
 
 
-        //    Outlook.MAPIFolder inbox = Application.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderInbox);
-        //    inbox.Items.ItemAdd += new Outlook.ItemsEvents_ItemAddEventHandler(this.ThresholdListener);
-        //}
+            Outlook.MAPIFolder inbox = Application.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderInbox);
 
+            try
+            {
+                inbox.Items.ItemAdd += new Outlook.ItemsEvents_ItemAddEventHandler(this.Items_ItemAdd);
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+
+        }
         #endregion
 
         #region NewMail event handler.
-        private static void outLookApp_NewMailEx(string EntryIDCollection)
+        public void outLookApp_NewMailEx(string EntryIDCollection)
         {
             MessageBox.Show("You've got a new mail whose EntryIDCollection is \n" + EntryIDCollection,
                     "NOTE", MessageBoxButtons.OK);
         }
         #endregion
-
 
         #region NewMail event handler.
         public object processcalc()
@@ -310,8 +329,7 @@ namespace Escaltethreshold
 
             var initialMemory = System.GC.GetTotalMemory(true);
             // body
-            var somethingThatConsumesMemory = Enumerable.Range(0, 100000)
-                .ToArray();
+            var somethingThatConsumesMemory = Enumerable.Range(0, 100000).ToArray();
             // end
             System.Threading.Thread.MemoryBarrier();
             var finalMemory = System.GC.GetTotalMemory(true);
@@ -335,15 +353,15 @@ namespace Escaltethreshold
         public void audittrail(string hostname, string starttime, string endtime)
         {
 
-          Guid  g = Guid.NewGuid();
+            Guid g = Guid.NewGuid();
             string isql = "INSERT " +
                  "INTO C##ISNG.APPMONITOR" +
                   "(" +
                    "HOSTNAME ," +
-                  " CREATED_BY ," +   
+                  " CREATED_BY ," +
                    " APPENDTIME ," +
                    "CREATED_ON ," +
-                   "LASTMODIFIED ," +   
+                   "LASTMODIFIED ," +
                    " LAST_UPDATED_BY ," +
                   "  LAST_UPDATED_ON ," +
                    " APPSTARTTIME ," +
@@ -356,10 +374,10 @@ namespace Escaltethreshold
                " '" + endtime + "'," +
                 " sysdate," +
                " 'TML'," +
-                " '"+endtime+"'," +
+                " '" + endtime + "'," +
                     " '" + endtime + "'," +
            " '" + starttime + "'," +
-            "  '"+ g +"' " +
+            "  '" + g + "' " +
                  ")";
             MainClass m = new MainClass();
             int y = m.insupddelClass(isql);
