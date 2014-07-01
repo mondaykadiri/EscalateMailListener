@@ -18,6 +18,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Configuration;
 using Twilio;
+using OracleInternal.MTS.CPP;
 
 
 
@@ -129,8 +130,8 @@ namespace Escaltethreshold
                 Outlook.MailItem mailItem = oAppointment.ForwardAsVcal();
 
                 // email address to send to 
-                mailItem.To = "mondaykadiri@gmail.com";
-
+                mailItem.To =  ConfigurationManager.AppSettings["xemail"]; //"mondaykadiri@gmail.com"; ConfigurationSettings.AppSettings["xemail"];
+                 
                 mailItem.Send();
 
                 //service.AutodiscoverUrl("monday.kadiri@ng.is.co.za");
@@ -212,6 +213,8 @@ namespace Escaltethreshold
             {
                 var xconn = Properties.Settings.Default.ConnectionString;    //ConfigurationSettings.AppSettings["conOracle"];
                 OracleConnection conn = new OracleConnection((xconn));
+               
+
 
                 string isql = osql;
 
@@ -277,7 +280,6 @@ namespace Escaltethreshold
 
         //}
 
-
-
+    
     }
 }

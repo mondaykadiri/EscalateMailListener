@@ -18,6 +18,7 @@ using Office = Microsoft.Office.Core;
 
 
 
+
 namespace Escaltethreshold
 {
     class Program
@@ -132,8 +133,8 @@ namespace Escaltethreshold
 
             Outlook.Items UnReads = myInbox.Items.Restrict("[Unread]=true");
 
-
-            if (UnReads.Count > 0) //(myInbox.Items.Count > 0)//(xitem is Outlook.MailItem)//(myInbox.Items.Count > 0) //if checking mailcount greater than 0
+            /** start unread Mails**/
+            if (UnReads.Count > 0 || myInbox.Items.Count > 0) //(myInbox.Items.Count > 0)//(xitem is Outlook.MailItem)//(myInbox.Items.Count > 0) //if checking mailcount greater than 0
             {
                 string subject = string.Empty;
                 string attachments = string.Empty;
@@ -157,25 +158,28 @@ namespace Escaltethreshold
                     isMailItem = false;
                 }
 
-
+                /** start Mails items **/
                 if (isMailItem)
                 {
 
+                    /** start loops **/
                     for (int i = 1; i <= UnReads.Count; i++)    //(int i = 1; i <= myInbox.Items.Count; i++)
                     {
                         // var item = myInbox.Items[i];
+                     
                         var item = UnReads[i];
                         subject = item.Subject;
                         body = item.Body;
 
-                        //Microsoft.Office.Interop.Outlook.MailItem oMsg = ( Microsoft.Office.Interop.Outlook.MailItem)oItems[i];
 
+
+                        /** Search for Keywords **/
                         if (subject.Contains("THRESHOLD") || body.Contains("Threshold") || body.Contains("Threshold Reporting - Nigeria"))
                         {
 
                             creationdate = (item.SentOn);
                             subject = subject.Replace('\'', '\"').ToUpper();
-                            // recepients = item.Recipients;
+                 
 
 
                             Outlook.Recipients recips = item.Recipients;
@@ -192,11 +196,6 @@ namespace Escaltethreshold
 
                             var result = MessageBox.Show(" Hello " + recepients + " \n New Appointment/Calendar with Subject " + subject + "", "",
                                              MessageBoxButtons.OK);
-                            //if (result == DialogResult.OK)
-                            //{
-                            //    return;
-
-                            //}
 
 
 
@@ -219,15 +218,103 @@ namespace Escaltethreshold
 
 
 
+                        } /** End search for key words **/
+
+
+                    } /** End For loop**/
+
+                    /** >>>>>>>>>>>>>>>>>>>>>>> Check for read Messages >>>>>>>>>>>>>>>>>>> **/
+
+
+                    /** start loops **/
+                    for (int i = 1; i <= myInbox.Items.Count; i++)
+                    {
+                        var item = myInbox.Items[i];
+                        //var item = UnReads[i];
+                        subject = item.Subject;
+                        body = item.Body;
+
+                        DateTime dt = DateTime.Now;
+
+                        DateTime de = dt.Date;
+
+                        DateTime dte = dt.AddDays(-7);
+                        DateTime weekdate = dte.Date;
+
+                        DateTime sentdate = (item.SentOn);
+                        DateTime newsentdate = sentdate.Date;
+
+
+
+
+                        for (var day = de; day <= sentdate; day = day.AddDays(-7))       //var day = from.Date; day.Date <= thru.Date; day = day.AddDays(1)
+                        {
+
+                            /** Search for Keywords **/
+                            if (subject.Contains("THRESHOLD") || body.Contains("Threshold") || body.Contains("Threshold Reporting - Nigeria"))
+                            {
+
+
+                                creationdate = (item.SentOn);
+                                subject = subject.Replace('\'', '\"').ToUpper();
+                                // recepients = item.Recipients;
+
+
+                                Outlook.Recipients recips = item.Recipients;
+                                foreach (Outlook.Recipient recip in recips)
+                                {
+                                    Outlook.PropertyAccessor pa = recip.PropertyAccessor;
+
+                                    recepients = (recip.Name);
+                                }
+
+                                //Create Appointments
+                                int X = m.createAppointment(subject, body, creationdate);
+
+
+                                var result = MessageBox.Show(" Hello " + recepients + " \n New Appointment/Calendar with Subject " + subject + "", "",
+                                                 MessageBoxButtons.OK);
+                                //if (result == DialogResult.OK)
+                                //{
+                                //    return;
+
+                                //}
+
+
+
+
+                                //generating the sql query
+                                string isql = "INSERT INTO c##isng.THRESHOLD_TASK (TASK_SUBJECT ,TASK_START_DATE,TASK_STATUS,TASK_END_DATE,LAST_UPDATE_DATE ," +
+                            "CREATION_DATE ,AST_UPDATE_BY, TASK_PRIORITY,TASK_ASSIGN1) Values ('" + subject + "', '" + creationdate + "', 'In Progress',  '" + (creationdate.AddHours(2)) + "'," +
+                                " '" + CurrTime + "','" + CurrTime + "','TML', 'High' , '" + recepients + "')";
+
+
+                                //insert into oracle database
+                                int ires = m.insupddelClass(isql);
+
+
+                                //send Text Messages
+                                string xphone = "+2348029998152";//ConfigurationManager.AppSettings["phonenumber"];
+                                string msg = " Hello you have an appointment with subject " + subject + " Please check your calendar";
+                                m.sendtextmessage(xphone, msg);
+
+
+
+
+                            } /** End search for key words **/
+
                         }
 
+                    } /** End For loop**/
 
-                    } //End For loop
+                    /** >>>>>>>>>>>>>>>>>>>>> End Check for read messages >>>>>>>>>>>>>>>>> **/
 
 
-                } // End of if ismailItem
 
-            }
+
+                } /** End of if ismailItem **/
+
+            } /** End Unread Mails**/
 
         }
         #endregion
@@ -357,7 +444,7 @@ namespace Escaltethreshold
             string isql = "INSERT " +
                  "INTO C##ISNG.APPMONITOR" +
                   "(" +
-                   "HOSTNAME ," +
+                  "HOSTNAME ," +
                   " CREATED_BY ," +
                    " APPENDTIME ," +
                    "CREATED_ON ," +
