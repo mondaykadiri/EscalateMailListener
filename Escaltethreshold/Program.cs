@@ -67,7 +67,7 @@ namespace Escaltethreshold
             Microsoft.Office.Interop.Outlook.Application myapp = null;
             Microsoft.Office.Interop.Outlook.MAPIFolder myInbox = null;
             Microsoft.Office.Interop.Outlook.NameSpace mapiNameSpace = null;
-            Outlook.Application application = null;
+           
 
 
             DateTime thisDate = DateTime.Now.Date;
