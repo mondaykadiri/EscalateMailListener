@@ -134,15 +134,7 @@ namespace Escaltethreshold
                  
                 mailItem.Send();
 
-                //service.AutodiscoverUrl("monday.kadiri@ng.is.co.za");
-                //Appointment appointment = new Appointment(service);
-                //appointment.Subject = xsubject;     // "Meditation";
-                //appointment.Body = xbody; // "My weekly relaxation time.";
-                //appointment.Start = xsentdate; //new DateTime(2008, 1, 1, 18, 0, 0);
-                //appointment.End = appointment.Start.AddHours(2);
-                //// Occurs every weeks on Tuesday and Thursday
-                ////appointment.Recurrence = new Recurrence.WeeklyPattern( new DateTime(2008, 1, 1),2, DayOfWeek.Tuesday,DayOfWeek.Thursday);
-                //appointment.Save();
+
 
                 return 1;
 

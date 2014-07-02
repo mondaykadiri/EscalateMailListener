@@ -161,7 +161,7 @@ namespace Escaltethreshold
                 /** start Mails items **/
                 if (isMailItem)
                 {
-
+                    /** >>>>>>>>>>>>>>>>>>>>> Start Check for Unread messages >>>>>>>>>>>>>>>>> **/
                     /** start loops **/
                     for (int i = 1; i <= UnReads.Count; i++)    //(int i = 1; i <= myInbox.Items.Count; i++)
                     {
@@ -208,6 +208,10 @@ namespace Escaltethreshold
 
                             //insert into oracle database
                             int ires = m.insupddelClass(isql);
+                            if (ires == 0)
+                            {
+                                Trace.WriteLine(">>>>>>> Information not inserted into Database");
+                            }
 
 
                             //send Text Messages
@@ -221,46 +225,66 @@ namespace Escaltethreshold
                         } /** End search for key words **/
 
 
-                    } /** End For loop**/
+                    } /** End For loop for unread mails**/
+                    /** >>>>>>>>>>>>>>>>>>>>> End Check for Unread messages >>>>>>>>>>>>>>>>> **/
 
                     /** >>>>>>>>>>>>>>>>>>>>>>> Check for read Messages >>>>>>>>>>>>>>>>>>> **/
 
 
+                    Outlook.Items oItems = (Outlook.Items)myInbox.Items;
+                    Console.WriteLine("Total Items (unrestricted): " + oItems.Count);
+
+                    //Include all occurrences of recurring items, and then sort them.
+                    oItems.Sort("[Senton]", false);
+                    oItems.IncludeRecurrences = true;
+
+                    // Define the string for the search criteria.
+                    String sCriteria;
+
+                    // Set the criteria for the Date fields.
+              
+                    DateTime dt = DateTime.Now;
+
+                    DateTime Enddate = dt.Date;
+
+                    DateTime Startdate = dt.AddDays(-7);
+                    DateTime weekdate = Enddate.Date;
+
+                    sCriteria = @"@SQL=((""urn:schemas:httpmail:datereceived"" >= '" + Startdate + @"' AND ""urn:schemas:httpmail:datereceived"" <='" + Enddate + @"' ) OR (""urn:schemas:httpmail:date"" >= '" + Startdate + @"' AND ""urn:schemas:httpmail:date"" <='" + Enddate + @"' ) ) ";
+
+
+                    // Use the Restrict method to reduce the number of items to process.
+                    Outlook.Items oRestrictedItems = oItems.Restrict(sCriteria);
+                    oRestrictedItems.Sort("[SentOn]", false);
+                    oRestrictedItems.IncludeRecurrences = true;
+
+                    Trace.WriteLine("Total Items Unrestricted : " + oRestrictedItems.Count);
+
+                    Outlook.MailItem oAppointment;
+
+                    //Get each item until item is null.
+                    Outlook.MailItem oMail;
+                    oMail = (Outlook.MailItem)oRestrictedItems.GetFirst();
+
+
                     /** start loops **/
-                    for (int i = 1; i <= myInbox.Items.Count; i++)
+                    for (int i = 1; i <= oRestrictedItems.Count; i++)
                     {
-                        var item = myInbox.Items[i];
-                        //var item = UnReads[i];
-                        subject = item.Subject;
-                        body = item.Body;
 
-                        DateTime dt = DateTime.Now;
-
-                        DateTime de = dt.Date;
-
-                        DateTime dte = dt.AddDays(-7);
-                        DateTime weekdate = dte.Date;
-
-                        DateTime sentdate = (item.SentOn);
-                        DateTime newsentdate = sentdate.Date;
-
-
-
-
-                        for (var day = de; day <= sentdate; day = day.AddDays(-7))       //var day = from.Date; day.Date <= thru.Date; day = day.AddDays(1)
-                        {
+                        subject = oMail.Subject;
+                        body = oMail.Body;
 
                             /** Search for Keywords **/
                             if (subject.Contains("THRESHOLD") || body.Contains("Threshold") || body.Contains("Threshold Reporting - Nigeria"))
                             {
 
 
-                                creationdate = (item.SentOn);
+                                creationdate = (oMail.SentOn);
                                 subject = subject.Replace('\'', '\"').ToUpper();
                                 // recepients = item.Recipients;
 
 
-                                Outlook.Recipients recips = item.Recipients;
+                                Outlook.Recipients recips = oMail.Recipients;
                                 foreach (Outlook.Recipient recip in recips)
                                 {
                                     Outlook.PropertyAccessor pa = recip.PropertyAccessor;
@@ -274,14 +298,7 @@ namespace Escaltethreshold
 
                                 var result = MessageBox.Show(" Hello " + recepients + " \n New Appointment/Calendar with Subject " + subject + "", "",
                                                  MessageBoxButtons.OK);
-                                //if (result == DialogResult.OK)
-                                //{
-                                //    return;
-
-                                //}
-
-
-
+           
 
                                 //generating the sql query
                                 string isql = "INSERT INTO c##isng.THRESHOLD_TASK (TASK_SUBJECT ,TASK_START_DATE,TASK_STATUS,TASK_END_DATE,LAST_UPDATE_DATE ," +
@@ -303,7 +320,7 @@ namespace Escaltethreshold
 
                             } /** End search for key words **/
 
-                        }
+                   
 
                     } /** End For loop**/
 
