@@ -319,7 +319,7 @@ namespace Escaltethreshold
 
 
                                 //send Text Messages
-                                string xphone = "+2348029998152";//ConfigurationManager.AppSettings["phonenumber"];
+                                string xphone = ConfigurationManager.AppSettings["phonenumber"];
                                 string msg = " Hello you have an appointment with subject " + subject + " Please check your calendar";
 
                                 //Call Send SMS method

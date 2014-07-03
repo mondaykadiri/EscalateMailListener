@@ -172,7 +172,7 @@ namespace Escaltethreshold
                 {
                     Type type = Type.GetTypeFromProgID("Outlook.Application");
                     application = (Outlook.Application)System.Activator.CreateInstance(type);
-                    throw ce;
+                    throw ;
                 }
 
 
