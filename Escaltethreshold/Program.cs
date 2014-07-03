@@ -67,7 +67,7 @@ namespace Escaltethreshold
             Microsoft.Office.Interop.Outlook.Application myapp = null;
             Microsoft.Office.Interop.Outlook.MAPIFolder myInbox = null;
             Microsoft.Office.Interop.Outlook.NameSpace mapiNameSpace = null;
-           
+
 
 
             DateTime thisDate = DateTime.Now.Date;
@@ -77,16 +77,9 @@ namespace Escaltethreshold
             MainClass m = new MainClass();
 
 
-
-            //Write into system Event logs
-            //String sSource = "Threshold Mail Listerner";
-            //String sLog = "Application";
-            //String sEvent = "TML Logs -->";
-
             //Check if Outlook process is running
             if (Process.GetProcessesByName("OUTLOOK").Count() <= 0)
             {
-
 
                 try
                 {
@@ -118,8 +111,6 @@ namespace Escaltethreshold
 
                 }
 
-
-
             }
 
             mapiNameSpace = myapp.GetNamespace("MAPI");
@@ -134,7 +125,7 @@ namespace Escaltethreshold
             Outlook.Items UnReads = myInbox.Items.Restrict("[Unread]=true");
 
             /** start unread Mails**/
-            if (UnReads.Count > 0 || myInbox.Items.Count > 0) //(myInbox.Items.Count > 0)//(xitem is Outlook.MailItem)//(myInbox.Items.Count > 0) //if checking mailcount greater than 0
+            if (UnReads.Count > 0 || myInbox.Items.Count > 0) 
             {
                 string subject = string.Empty;
                 string attachments = string.Empty;
@@ -162,11 +153,12 @@ namespace Escaltethreshold
                 if (isMailItem)
                 {
                     /** >>>>>>>>>>>>>>>>>>>>> Start Check for Unread messages >>>>>>>>>>>>>>>>> **/
+
                     /** start loops **/
                     for (int i = 1; i <= UnReads.Count; i++)    //(int i = 1; i <= myInbox.Items.Count; i++)
                     {
                         // var item = myInbox.Items[i];
-                     
+
                         var item = UnReads[i];
                         subject = item.Subject;
                         body = item.Body;
@@ -179,7 +171,7 @@ namespace Escaltethreshold
 
                             creationdate = (item.SentOn);
                             subject = subject.Replace('\'', '\"').ToUpper();
-                 
+
 
 
                             Outlook.Recipients recips = item.Recipients;
@@ -192,6 +184,11 @@ namespace Escaltethreshold
 
                             //Create Appointments
                             int X = m.createAppointment(subject, body, creationdate);
+                            if (X == 0)
+                            {
+                                Trace.WriteLine(">>>>>>> Appointment not inserted into calendar");
+
+                            }
 
 
                             var result = MessageBox.Show(" Hello " + recepients + " \n New Appointment/Calendar with Subject " + subject + "", "",
@@ -217,6 +214,8 @@ namespace Escaltethreshold
                             //send Text Messages
                             string xphone = "+2348029998152";//ConfigurationManager.AppSettings["phonenumber"];
                             string msg = " Hello you have an appointment with subject " + subject + " Please check your calendar";
+
+                            //call send SMS method
                             m.sendtextmessage(xphone, msg);
 
 
@@ -236,13 +235,13 @@ namespace Escaltethreshold
 
                     //Include all occurrences of recurring items, and then sort them.
                     oItems.Sort("[Senton]", false);
-                    oItems.IncludeRecurrences = true;
+                 
 
                     // Define the string for the search criteria.
                     String sCriteria;
 
                     // Set the criteria for the Date fields.
-              
+
                     DateTime dt = DateTime.Now;
 
                     DateTime Enddate = dt.Date;
@@ -256,32 +255,33 @@ namespace Escaltethreshold
                     // Use the Restrict method to reduce the number of items to process.
                     Outlook.Items oRestrictedItems = oItems.Restrict(sCriteria);
                     oRestrictedItems.Sort("[SentOn]", false);
-                    oRestrictedItems.IncludeRecurrences = true;
+                    oRestrictedItems.IncludeRecurrences = false;
 
-                    Trace.WriteLine("Total Items Unrestricted : " + oRestrictedItems.Count);
+                    Trace.WriteLine(">>>>>>> Total Items Unrestricted : " + oRestrictedItems.Count);
 
-                    Outlook.MailItem oAppointment;
+
 
                     //Get each item until item is null.
                     Outlook.MailItem oMail;
-                    oMail = (Outlook.MailItem)oRestrictedItems.GetFirst();
 
+                  
 
                     /** start loops **/
-                    for (int i = 1; i <= oRestrictedItems.Count; i++)
+                    for (int i = 1; i <= oRestrictedItems.Count; i++) // while (oMail != null)  //
                     {
-
+                    
+                          oMail = (Outlook.MailItem)oRestrictedItems.GetNext();
                         subject = oMail.Subject;
                         body = oMail.Body;
 
-                            /** Search for Keywords **/
-                            if (subject.Contains("THRESHOLD") || body.Contains("Threshold") || body.Contains("Threshold Reporting - Nigeria"))
+                        /** Search for Keywords **/
+                        if (subject.Contains("THRESHOLD") || body.Contains("Threshold") || body.Contains("Threshold Reporting - Nigeria"))
+                        {
+                            while(oMail != null)
                             {
-
-
+                           
                                 creationdate = (oMail.SentOn);
                                 subject = subject.Replace('\'', '\"').ToUpper();
-                                // recepients = item.Recipients;
 
 
                                 Outlook.Recipients recips = oMail.Recipients;
@@ -294,11 +294,15 @@ namespace Escaltethreshold
 
                                 //Create Appointments
                                 int X = m.createAppointment(subject, body, creationdate);
+                                if (X == 0)
+                                {
+                                    Trace.WriteLine(">>>>>>> Appointment not inserted into Calendar");
+                                }
 
 
                                 var result = MessageBox.Show(" Hello " + recepients + " \n New Appointment/Calendar with Subject " + subject + "", "",
                                                  MessageBoxButtons.OK);
-           
+
 
                                 //generating the sql query
                                 string isql = "INSERT INTO c##isng.THRESHOLD_TASK (TASK_SUBJECT ,TASK_START_DATE,TASK_STATUS,TASK_END_DATE,LAST_UPDATE_DATE ," +
@@ -308,19 +312,25 @@ namespace Escaltethreshold
 
                                 //insert into oracle database
                                 int ires = m.insupddelClass(isql);
+                                if (ires == 0)
+                                {
+                                    Trace.WriteLine(">>>>>>> Information not inserted into Database");
+                                }
 
 
                                 //send Text Messages
                                 string xphone = "+2348029998152";//ConfigurationManager.AppSettings["phonenumber"];
                                 string msg = " Hello you have an appointment with subject " + subject + " Please check your calendar";
+
+                                //Call Send SMS method
                                 m.sendtextmessage(xphone, msg);
 
 
 
 
                             } /** End search for key words **/
-
-                   
+                          //  oRestrictedItems.ResetColumns();    // reset search loop
+                        } //while loop
 
                     } /** End For loop**/
 

@@ -87,12 +87,12 @@ namespace Escaltethreshold
             if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable() == true)
             {
 
-                string AccountSid = "AC45b00a5504e242b8a486ebf4cad405c9";
+                string AccountSid = "AC5cc87b1275e7ef33ef2986be6be740a5";
                 string AuthToken = "605ec28a7d811660710961fdc3a9f594";
 
                 var twilio = new TwilioRestClient(AccountSid, AuthToken);
 
-                var message = twilio.SendMessage("+17314724935", xTo, xmsg, "http://localhost:6200");
+                var message = twilio.SendMessage("+17314724935", xTo, xmsg);
 
             }
             else
