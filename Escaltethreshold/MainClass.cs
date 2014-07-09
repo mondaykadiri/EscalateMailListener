@@ -19,6 +19,8 @@ using System.Windows.Forms;
 using System.Configuration;
 using Twilio;
 using OracleInternal.MTS.CPP;
+using com.IBL.Utility;
+
 
 
 
@@ -81,14 +83,14 @@ namespace Escaltethreshold
         }
         #endregion
 
-        #region Email forwarder
+        #region SMS forwarder
         public void sendtextmessage(string xTo, string xmsg)
         {
             if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable() == true)
             {
 
-                string AccountSid = "AC5cc87b1275e7ef33ef2986be6be740a5";
-                string AuthToken = "605ec28a7d811660710961fdc3a9f594";
+                string AccountSid = Devsecurity.StringDecrypt( ConfigurationManager.AppSettings["Authid"]);
+                string AuthToken = Devsecurity.StringDecrypt(ConfigurationManager.AppSettings["secret"]);
 
                 var twilio = new TwilioRestClient(AccountSid, AuthToken);
 
@@ -243,34 +245,6 @@ namespace Escaltethreshold
         #endregion
 
 
-        //private void ReminderExample()
-        //{
-        //    Outlook.AppointmentItem appt = Application.CreateItem(
-        //        Outlook.OlItemType.olAppointmentItem)
-        //        as Outlook.AppointmentItem;
-        //    appt.Subject = "Wine Tasting";
-        //    appt.Location = "Napa CA";
-        //    appt.Sensitivity = Outlook.OlSensitivity.olPrivate;
-        //    appt.Start = DateTime.Parse("10/21/2006 10:00 AM");
-        //    appt.End = DateTime.Parse("10/21/2006 3:00 PM");
-        //    appt.ReminderSet = true;
-        //    appt.ReminderMinutesBeforeStart = 120;
-        //    appt.Save();
-        //}
-
-
-        //public void maillistener()
-        //{
-        //    Outlook.Application outlookApp = new Outlook.Application(); //
-        //    //  Outlook.ApplicationClass outLookApp = new Outlook.ApplicationClass();
-
-        //    // Ring up the new message event.
-        //    outlookApp.NewMail += ApplicationEvents_11_NewMailEventHandler(outLookApp_NewMailEx);
-        //    Console.WriteLine("Please wait for new messages...");
-        //    Console.ReadLine();
-
-
-        //}
 
     
     }
