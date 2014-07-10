@@ -72,7 +72,7 @@ namespace Escaltethreshold
 
             DateTime thisDate = DateTime.Now.Date;
             CultureInfo culture = new CultureInfo("pt-BR");
-            string CurrTime = thisDate.ToString("d", culture);
+            string currTime = thisDate.ToString("d", culture);
 
             MainClass m = new MainClass();
 
@@ -200,7 +200,7 @@ namespace Escaltethreshold
                             //generating the sql query
                             string isql = "INSERT INTO c##isng.THRESHOLD_TASK (TASK_SUBJECT ,TASK_START_DATE,TASK_STATUS,TASK_END_DATE,LAST_UPDATE_DATE ," +
                         "CREATION_DATE ,AST_UPDATE_BY, TASK_PRIORITY,TASK_ASSIGN1) Values ('" + subject + "', '" + creationdate + "', 'In Progress',  '" + (creationdate.AddHours(2)) + "'," +
-                            " '" + CurrTime + "','" + CurrTime + "','TML', 'High' , '" + recepients + "')";
+                            " '" + currTime + "','" + currTime + "','TML', 'High' , '" + recepients + "')";
 
 
                             //insert into oracle database
@@ -307,7 +307,7 @@ namespace Escaltethreshold
                                 //generating the sql query
                                 string isql = "INSERT INTO c##isng.THRESHOLD_TASK (TASK_SUBJECT ,TASK_START_DATE,TASK_STATUS,TASK_END_DATE,LAST_UPDATE_DATE ," +
                             "CREATION_DATE ,AST_UPDATE_BY, TASK_PRIORITY,TASK_ASSIGN1) Values ('" + subject + "', '" + creationdate + "', 'In Progress',  '" + (creationdate.AddHours(2)) + "'," +
-                                " '" + CurrTime + "','" + CurrTime + "','TML', 'High' , '" + recepients + "')";
+                                " '" + currTime + "','" + currTime + "','TML', 'High' , '" + recepients + "')";
 
 
                                 //insert into oracle database
