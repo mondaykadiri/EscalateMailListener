@@ -35,7 +35,7 @@ namespace Escaltethreshold
 
             var p = new Program();
 
-            string ipadr = p.GetIP();
+            string ipadr = p.GetIp();
             string strttime = dt.ToString();
 
             Trace.WriteLine("Checking for Network Connection --> " + dt + ".", "TML");
@@ -453,13 +453,19 @@ namespace Escaltethreshold
         #endregion
 
         #region Get Local IPAddress.
-        public string GetIP()
+        public string GetIp()
         {
             string strHostName = "";
             strHostName = System.Net.Dns.GetHostName();
             IPHostEntry ipEntry = System.Net.Dns.GetHostEntry(strHostName);
-            IPAddress[] addr = ipEntry.AddressList;
-            return addr[addr.Length - 2].ToString();
+            IPAddress[] addrs = ipEntry.AddressList;
+            foreach (IPAddress addr in addrs)
+            {
+                return (strHostName + " - " + addr);
+
+            }
+
+            return null;
         }
         #endregion
 
