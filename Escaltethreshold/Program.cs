@@ -277,8 +277,7 @@ namespace Escaltethreshold
                         /** Search for Keywords **/
                         if (subject.Contains("THRESHOLD") || body.Contains("Threshold") || body.Contains("Threshold Reporting - Nigeria"))
                         {
-                            while(oMail != null)
-                            {
+                          
                            
                                 creationdate = (oMail.SentOn);
                                 subject = subject.Replace('\'', '\"').ToUpper();
@@ -328,7 +327,7 @@ namespace Escaltethreshold
 
 
 
-                            } /** End search for key words **/
+                           
                           //  oRestrictedItems.ResetColumns();    // reset search loop
                         } //while loop
 
