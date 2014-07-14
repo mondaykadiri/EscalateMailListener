@@ -213,7 +213,7 @@ namespace Escaltethreshold
 
                             //send Text Messages
                             string xphone = "+2348029998152";//ConfigurationManager.AppSettings["phonenumber"];
-                            string msg = " Hello you have an appointment with subject " + subject + " Please check your calendar";
+                            string msg = " Hello you have an appointment with " + recepients + "  " + subject + " Please check your calendar";
 
                             //call send SMS method
                             m.sendtextmessage(xphone, msg);
@@ -269,8 +269,8 @@ namespace Escaltethreshold
                     /** start loops **/
                     for (int i = 1; i <= oRestrictedItems.Count; i++) // while (oMail != null)  //
                     {
-                    
-                          oMail = oRestrictedItems[i];
+
+                        oMail = (Outlook.MailItem)oRestrictedItems[i];
                         subject = oMail.Subject;
                         body = oMail.Body;
 
@@ -318,7 +318,7 @@ namespace Escaltethreshold
 
                                 //send Text Messages
                                 string xphone = ConfigurationManager.AppSettings["phonenumber"];
-                                string msg = " Hello you have an appointment with subject " + subject + " Please check your calendar";
+                                string msg = " Hello you have an appointment with " + recepients + "  " + subject + " Please check your calendar";
 
                                 //Call Send SMS method
                                 m.sendtextmessage(xphone, msg);
