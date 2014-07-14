@@ -63,7 +63,7 @@ namespace Escaltethreshold
         public void ThresholdListener()
         {
 
-
+            Guid g = Guid.NewGuid();
             Microsoft.Office.Interop.Outlook.Application myapp = null;
             Microsoft.Office.Interop.Outlook.MAPIFolder myInbox = null;
             Microsoft.Office.Interop.Outlook.NameSpace mapiNameSpace = null;
@@ -198,8 +198,8 @@ namespace Escaltethreshold
 
 
                             //generating the sql query
-                            string isql = "INSERT INTO c##isng.THRESHOLD_TASK (TASK_SUBJECT ,TASK_START_DATE,TASK_STATUS,TASK_END_DATE,LAST_UPDATE_DATE ," +
-                        "CREATION_DATE ,AST_UPDATE_BY, TASK_PRIORITY,TASK_ASSIGN1) Values ('" + subject + "', '" + creationdate + "', 'In Progress',  '" + (creationdate.AddHours(2)) + "'," +
+                            string isql = "INSERT INTO c##isng.THRESHOLD_TASK (TASKID,TASK_SUBJECT ,TASK_START_DATE,TASK_STATUS,TASK_END_DATE,LAST_UPDATE_DATE ," +
+                        "CREATION_DATE ,AST_UPDATE_BY, TASK_PRIORITY,TASK_ASSIGN1) Values ( '"+ g +"',  '" + subject + "', '" + creationdate + "', 'In Progress',  '" + (creationdate.AddHours(2)) + "'," +
                             " '" + currTime + "','" + currTime + "','TML', 'High' , '" + recepients + "')";
 
 
@@ -304,10 +304,9 @@ namespace Escaltethreshold
 
 
                                 //generating the sql query
-                                string isql = "INSERT INTO c##isng.THRESHOLD_TASK (TASK_SUBJECT ,TASK_START_DATE,TASK_STATUS,TASK_END_DATE,LAST_UPDATE_DATE ," +
-                            "CREATION_DATE ,AST_UPDATE_BY, TASK_PRIORITY,TASK_ASSIGN1) Values ('" + subject + "', '" + creationdate + "', 'In Progress',  '" + (creationdate.AddHours(2)) + "'," +
-                                " '" + currTime + "','" + currTime + "','TML', 'High' , '" + recepients + "')";
-
+                                string isql = "INSERT INTO c##isng.THRESHOLD_TASK (TASKID,TASK_SUBJECT ,TASK_START_DATE,TASK_STATUS,TASK_END_DATE,LAST_UPDATE_DATE ," +
+                     "CREATION_DATE ,AST_UPDATE_BY, TASK_PRIORITY,TASK_ASSIGN1) Values ( '" + g + "',  '" + subject + "', '" + creationdate + "', 'In Progress',  '" + (creationdate.AddHours(2)) + "'," +
+                         " '" + currTime + "','" + currTime + "','TML', 'High' , '" + recepients + "')";
 
                                 //insert into oracle database
                                 int ires = m.insupddelClass(isql);
