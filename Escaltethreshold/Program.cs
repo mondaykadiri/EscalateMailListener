@@ -270,7 +270,7 @@ namespace Escaltethreshold
                     for (int i = 1; i <= oRestrictedItems.Count; i++) // while (oMail != null)  //
                     {
                     
-                          oMail = (Outlook.MailItem)oRestrictedItems.GetNext();
+                          oMail = oRestrictedItems[i];
                         subject = oMail.Subject;
                         body = oMail.Body;
 
