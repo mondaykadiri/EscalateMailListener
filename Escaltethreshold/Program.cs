@@ -372,7 +372,9 @@ namespace Escaltethreshold
         #region checking and starting outlook
         public void checkoutlook()
         {
-            if (Process.GetProcessesByName("OUTLOOK").Count() <= 0)
+            int cntProcess ;
+             cntProcess = Process.GetProcessesByName("OUTLOOK").Count();
+            if (cntProcess <= 0)
             {
 
                 this.startsoutlook();
